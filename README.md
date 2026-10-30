@@ -24,6 +24,16 @@ conda env create -f environment.yml
 conda activate ml-xas
 ```
 
+#### If Conda setup fails while installing DGL
+
+The CUDA-enabled DGL wheel is hosted in DGL's wheel repository, not on the default Python package index. If environment creation fails with `No matching distribution found for dgl==1.1.3+cu121`, install that wheel into the partially created environment, then rerun the environment update:
+
+```bash
+conda activate ml-xas
+python -m pip install "dgl==1.1.3+cu121" -f https://data.dgl.ai/wheels/cu121/repo.html
+conda env update -f environment.yml
+```
+
 #### GPU Support
 This environment assumes CUDA 12.2 available as a system module
 Example: **module load cuda/12.2**

@@ -385,7 +385,6 @@ dependencies:
       - torch==2.2.0
       - torch-geometric==2.6.1
       - torch-summary==1.4.5
-      - torchaudio==2.8.0
       - torchdata==0.8.0
       - torchmetrics==1.8.2
       - torchvision==0.17.0
