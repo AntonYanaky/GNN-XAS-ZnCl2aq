@@ -60,3 +60,47 @@ python -m ipykernel install --user --name="jupyter_ml-xas"
 
 ```
 
+## RPC service for LightshowAI
+
+The `environment.yml` environment includes the packages required by the RPC server, including PyTorch, DGL, MatGL, pymatgen, FastAPI, and Uvicorn. Create it once from this repository in WSL:
+
+```bash
+conda env create -f environment.yml
+```
+
+If `ml-xas` already exists, skip environment creation. Start the server from the repository root:
+
+```bash
+conda activate ml-xas
+python server/xas_rpc_server.py
+```
+
+The first start loads the model checkpoint and may take a short time. The server uses the GPU when PyTorch detects CUDA, otherwise it runs on the CPU. It listens only on `127.0.0.1:8000`.
+
+In a second WSL terminal, check that the server is ready:
+
+```bash
+curl http://127.0.0.1:8000/health
+```
+
+The response should be `{"status":"ok"}`. You can also open `http://127.0.0.1:8000/docs` to inspect the request schema.
+
+In LightshowAI, select **Zn VASP** and set its `ZN_XAS_RPC_URL` environment variable to:
+
+```text
+http://127.0.0.1:8000/v1/predict
+```
+
+Keep LightshowAI's pinned environment unchanged. LightshowAI must be able to reach the WSL localhost address. If LightshowAI runs in a separate container or on another machine, this loopback-only server setup will not be reachable as written.
+
+- `GET /health`: readiness check.
+- `POST /v1/predict`: send `{"structure": structure.as_dict()}`. Optional `site_indices` select original zero-based Zn indices. By default, every Zn is predicted separately and averaged. Responses preserve original indices and contain 200 points. LightshowAI adds the 705.3 eV display offset.
+
+The server uses the existing config, graph code, and model checkpoint. Each selected absorber is moved to graph node zero internally. Only O, H, Zn, and Cl are supported. To force CPU use or choose another port, for example:
+
+```bash
+XAS_DEVICE=cpu XAS_PORT=8001 python server/xas_rpc_server.py
+```
+
+Update the LightshowAI URL to match the selected port. Press `Ctrl+C` in the server terminal to stop it.
+
