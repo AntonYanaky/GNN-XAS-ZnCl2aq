@@ -104,7 +104,7 @@ http://127.0.0.1:8000/v1/predict
 Keep LightshowAI's pinned environment unchanged. LightshowAI must be able to reach the WSL localhost address. If LightshowAI runs in a separate container or on another machine, this loopback-only server setup will not be reachable as written.
 
 - `GET /health`: readiness check.
-- `POST /v1/predict`: send `{"structure": structure.as_dict()}`. Optional `site_indices` select original zero-based Zn indices. By default, every Zn is predicted separately and averaged. Responses preserve original indices and contain 200 points. LightshowAI adds the 705.3 eV display offset.
+- `POST /v1/predict`: send `{"structure": structure.as_dict()}`. Optional `site_indices` select original zero-based Zn indices. By default, every Zn is predicted separately and averaged. Responses preserve original indices and contain 200 points. LightshowAI plots and exports the native 8950–9009.76 eV grid. The response's `reference_energy_shift_eV` value is the offset used to align the paper's plots with measured spectra.
 
 The server uses the existing config, graph code, and model checkpoint. Each selected absorber is moved to graph node zero internally. Only O, H, Zn, and Cl are supported. To force CPU use or choose another port, for example:
 
